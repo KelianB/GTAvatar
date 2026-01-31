@@ -1,0 +1,15 @@
+.zoomable {
+    transition: scale 0.25s ease, translate 0.25s ease;
+    cursor: zoom-in;
+
+    &.zoomed {
+        transition: scale 0.25s ease;
+        z-index: 100;
+        overflow: visible;
+        cursor: move;
+    }
+
+    &.dragging {
+        cursor: grabbing;
+    }
+}

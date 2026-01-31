@@ -1,0 +1,133 @@
+.bal-container {
+    position: relative;
+    cursor: ew-resize;
+    overflow: hidden;
+}
+
+.bal-before,
+.bal-after {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.bal-after {
+    right: 0;
+}
+
+.bal-before {
+    z-index: 1;
+}
+
+.bal-before-inset {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.bal-after-content,
+.bal-before-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    user-select: none;
+}
+
+/* If the content is directly an image */
+.bal-after-content.img,
+.bal-before-content.img {
+    object-fit: contain;
+    object-position: 50% 50%;
+    user-select: none;
+}
+
+.bal-label {
+    position: absolute;
+    bottom: 0;
+    margin: 1em;
+    background: var(--text-color);
+    color: var(--bg-color);
+    border-radius: 5px;
+    font-size: 0.9em;
+    user-select: none;
+    pointer-events: none;
+    padding: 2px 10px;
+}
+
+.bal-before-content .bal-label {
+    left: 0;
+}
+
+.bal-after-content .bal-label {
+    right: 0;
+}
+
+.bal-handle {
+    height: 41px;
+    width: 41px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -20px;
+    margin-top: -21px;
+    border: 2px solid #fff;
+    border-radius: 1000px;
+    z-index: 3;
+    pointer-events: none;
+    box-shadow: 0 0 6px #000;
+}
+
+.handle-left-arrow,
+.handle-right-arrow {
+    width: 0;
+    height: 0;
+    border: 6px inset transparent;
+    position: absolute;
+    top: 50%;
+    margin-top: -6px;
+}
+
+.handle-left-arrow {
+    border-right: 6px solid #fff;
+    left: 50%;
+    margin-left: -17px;
+}
+
+.handle-right-arrow {
+    border-left: 6px solid #fff;
+    right: 50%;
+    margin-right: -17px;
+}
+
+.bal-handle::before {
+    bottom: 50%;
+    margin-bottom: 20px;
+    box-shadow: 0 0 6px #000;
+}
+
+.bal-handle::after {
+    top: 50%;
+    margin-top: 20.5px;
+    box-shadow: 0 0 3px #000;
+}
+
+.bal-handle::before,
+.bal-handle::after {
+    content: " ";
+    display: block;
+    width: 2px;
+    background: #fff;
+    height: 9999px;
+    position: absolute;
+    left: 50%;
+    margin-left: -1.5px;
+}

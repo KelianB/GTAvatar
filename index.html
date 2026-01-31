@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>GTAvatar</title>
+	<meta name="description"
+		content="GTAvatar: Bridging Gaussian Splatting and Texture Mapping for Relightable and Editable Gaussian Avatars" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+	<meta charset="utf-8">
+	<link rel="icon" href="./static/icon.png" type="image/png">
+
+	<!--Facebook-->
+	<meta property="og:image" content="">
+	<meta property="og:image:type" content="image/jpg">
+	<meta property="og:image:width" content="600">
+	<meta property="og:image:height" content="400">
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://kelianb.github.io/GTAvatar/" />
+	<meta property="og:title" content="GTAvatar" />
+	<meta property="og:description"
+		content="Project page for GTAvatar: Bridging Gaussian Splatting and Texture Mapping for Relightable and Editable Gaussian Avatars" />
+
+	<!--Twitter-->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="GTAvatar" />
+	<meta property="twitter:description"
+		content="GTAvatar: Bridging Gaussian Splatting and Texture Mapping for Relightable and Editable Gaussian Avatars." />
+	<meta name="twitter:image" content="">
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+	<link rel="stylesheet" href="./bal.css">
+	<link rel="stylesheet" href="./zoomable.css">
+	<link rel="stylesheet" href="./style.css">
+
+	<script src="./bal.js" type="text/javascript"></script>
+	<script src="./zoomable.js" type="text/javascript"></script>
+	<script src="./script.js" type="text/javascript"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" type="text/javascript"></script>
+
+	<!-- Fonts and Icons -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=block">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined&display=block">
+
+
+	<!--  Google Analytics (DO NOT copy/paste following section, setup your own analytics tag at https://analytics.google.com/analytics/web/)  -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-VL5W8GWEQ6"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+
+		gtag('config', 'G-VL5W8GWEQ6');
+	</script>
+	<!-- End Google Analytics -->
+</head>
+
+<body>
+
+	<div class="container" style="text-align:center; padding: 0 2rem">
+		<div class="row">
+			<div class="col-12 paper-title">
+				<div>
+					<img src="./static/icon.png" alt="Icon" />
+					&nbsp;
+					<h1 class="paper-title-1">GTAvatar</h1>
+				</div>
+				<h1 class="paper-title-2">Bridging Gaussian Splatting and Texture Mapping for Relightable and Editable
+					Gaussian Avatars</h1>
+			</div>
+
+			<h3 style="font-weight: 400" class="mt-2 mb-3">Eurographics 2026</h3>
+
+			<h3 class="authors">
+				<a href="">Kelian Baert</a>
+				<a href="">Mae Younes</a>
+				<a href="">Francois Bourel</a>
+				<a href="https://people.irisa.fr/Marc.Christie/">Marc Christie</a>
+				<a href="https://boukhayma.github.io/">Adnane Boukhayma</a>
+			</h3>
+
+			<!-- <p style="font-size: 18px">Univ Rennes, Inria, CNRS, IRISA, France<br></p> -->
+			<p class="logos my-4">
+				<a id="logo-univrennes" href="https://www.univ-rennes.fr/en" target="_blank"></a>
+				<a id="logo-inria" href="https://www.inria.fr/en/inria-centre-rennes-university" target="_blank"></a>
+				<a id="logo-cnrs" href="https://www.cnrs.fr/en" target="_blank"></a>
+				<a id="logo-irisa" href="https://www.irisa.fr/en" target="_blank"></a>
+			</p>
+
+			<h3 class="links">
+				<a class="label" href="https://arxiv.org/abs/2512.09162">
+					<i class="ai ai-arxiv"></i>Paper
+				</a>
+				<a class="label" href="https://github.com/KelianB/GTAvatar">
+					<i class="fa fa-github"></i>Code (coming soon)
+				</a>
+				<a class="label" href="#results">
+					<i class="fa fa-image"></i>Results
+				</a>
+				<a class="label" href="#bibtex">
+					<i class="fa fa-commenting"></i>BibTeX
+				</a>
+			</h3>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<div aria-label="Teaser figure" class="svg pad zoomable"
+					style="background-image: url('./static/teaser1.2-pbr.svg'); width: 100%; aspect-ratio: 2.3;">
+				</div>
+
+				<div style="text-align: justify; margin-top: 1em;">
+					<p>
+						<b>GTAvatar</b> broadens applications of monocular Gaussian Splatting head avatars beyond
+						reenactment and relighting, enabling interactive editing through textures. From a single
+						video, we reconstruct a state-of-the-art 3D avatar, integrating material textures while
+						preserving the training efficiency, rendering speed and visual fidelity of Gaussian
+						Splatting.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<h1>Updates</h1>
+				<hr />
+
+				<!-- <p class="update">
+					<span class="label date">09-2025</span> <a href="">Code</a> release.<br>
+				</p> -->
+				<p class="update">
+					<span class="label date">02-2026</span> GTAvatar has been accepted to Eurographics 2026
+				</p>
+				<p class="update">
+					<span class="label date">12-2025</span> Preprint release on
+					<a href="https://arxiv.org/abs/2512.09162">
+						<span class="icon"><i class="ai ai-arxiv"></i></span>
+						arXiv
+					</a>
+				</p>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<h1>Overview</h1>
+				<hr />
+
+				<div class="col-xs-12 col-lg-12" style="text-align:center">
+					<br>
+					<div aria-label="Method figure" class="svg pad zoomable"
+						style="background-image: url('./static/method0.4.svg'); width: 100%; aspect-ratio: 2.3;">
+					</div>
+					<br><br>
+				</div>
+				<p class="my-0" style="text-align: justify">
+					We leverage the explicit surface representation of 2D Gaussians to <b>map the ray-splat
+						intersection to UV space</b>:
+				</p>
+
+				<div class="svg bg my-3 zoomable" aria-label="Illustration of mapping from ray-splat intersection to UV"
+					style="background-image: url('./static/ray-splat-1.1.svg'); max-width: min(80%, 350px); aspect-ratio: 1.3;">
+				</div>
+
+				<p style="text-align: justify">
+					This mapping is computed efficiently as detailed in our paper. From this UV coordinate, we
+					retrieve texel values for albedo, roughness, specular reflectance and normal via bilinear
+					texture filtering. These values replace the Spherical Harmonics used in standard Gaussian
+					Splatting. Finally, the final image is rendered using the Cook-Torrance BRDF with the
+					rasterized G-buffers.
+					The Gaussian attributes and texture maps are jointly optimized end-to-end during training,
+					with photometric, geometric and regularization losses.
+				</p>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<h1>Gaussian-to-Mesh binding</h1>
+				<hr />
+
+				<p style="text-align: justify">
+					Each Gaussian is embedded onto a triangle of the <a href="https://flame.is.tue.mpg.de/">FLAME</a> 3D
+					Morphable Model with a fixed triangle ID, and parameterized by barycentric coordinates within
+					the
+					triangle, an offset along the normal, a relative rotation, two scales and an opacity.
+					Given pose and expression parameters, Gaussian attributes are updated as follows:
+				</p>
+
+				<!-- <ol style="text-align: justify; font-size: 0.9em; font-family: Consolas;"> -->
+				<ol style="text-align: justify; font-size: 0.9em;">
+					<li>Deform mesh,</li>
+					<li>Compute 3D position using the triangle's vertices, the barycentric coordinates and the offset
+						along the normal,</li>
+					<li>Multiply the splat's relative rotation by the triangle's orientation matrix (TBN).</li>
+					<li>Compute <span class="math">uv<sub>0</sub></span>, the UV coordinates at the center of the splat.
+					</li>
+					<li>Compute <span class="math">uv<sub>J</sub></span>, the Jacobian matrix used in the mapping
+						(see Section 3.4 of the paper for details).</li>
+				</ol>
+
+				<p style="text-align: justify">
+					During initialization, Gaussians are created at the center of each triangle. Typical
+					densification and pruning from 2DGS are then used during optimization to refine the distribution of
+					Gaussians over the surface.
+				</p>
+			</div>
+		</div>
+
+		<div class="row" id="results">
+			<div class="col-12">
+				<h1>Qualitative Results</h1>
+				<hr />
+
+				<h3>Texture editing</h3>
+				<p>The semantic texture space enables intuitive editing of the avatars' appearance with widely available
+					tools. This section illustrates
+					applications of our method through simple modifications.</p>
+
+				<div class="d-lg-flex flex-row gap-5">
+					<div style="flex: 1; text-align: justify;">
+						<h4>Albedo editing</h4>
+						<p>Here, the albedo texture is replaced or edited manually in image editing software. The
+							modified texture integrates with the original reconstruction seemlessly, preserving
+							high-frequency details. Note that those edits are fully compatible with animation and
+							relighting.</p>
+						<div id="carousel-textureedit"></div>
+					</div>
+					<div style="flex: 1; text-align: justify;">
+						<h4>Material editing</h4>
+						<p>In the following examples, we partially or completely replace the material maps, resulting in
+							substantial changes to the appearance. As shown,
+							normal mapping can be used to add intricate details to the geometry. Our pipeline is
+							compatible with off-the-shelf material definitions.</p>
+						<div id="carousel-texturepbr"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6">
+				<h3>Reconstruction</h3>
+				<p>The following avatars are rendered with head poses and expressions tracked from video frames that
+					were not seen during training (self-reenactment).</p>
+				<br />
+				<div id="carousel-reconstruction-videos"></div>
+			</div>
+
+			<div class="col-12 col-md-6">
+				<h3>Relighting</h3>
+				<p>In addition to new poses and expressions, we modify the illumination of the scene using environment
+					maps. Our
+					approach achieves results that are comparable to state-of-the-art relighting methods.</p>
+				<div id="carousel-relighting-videos"></div>
+			</div>
+
+			<p class="mt-4">For more examples along with comparisons, quantitative results and ablation studies,
+				please refer to the paper.</p>
+		</div>
+
+		<div class="row" id="bibtex">
+			<div class="col-12">
+				<h1>BibTeX</h1>
+				<hr />
+				If you find this work useful for your research, please cite:
+
+				<div style="position: relative; margin-top: 1em;">
+					<button id="copy-bibtex" class="btn btn-sm btn-outline-secondary"
+						style="position: absolute; right: 0; top: 0; margin: .5em;">
+						<i class="fa fa-copy"></i> Copy
+					</button>
+					<pre class="bibtex"><code>@article{baert2026gta,
+	author       = {},
+	title        = {},
+	journal      = {},
+	number       = {},
+	volume       = {},
+	month        = {},
+	year         = {},
+	url          = {}
+}</code></pre>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+
+	<div id="footer">
+		<p class="small">
+			The code of this webpage is based on <a href="https://anttwo.github.io/milo/" target="_blank">MILo's</a> and
+			<a href="https://nerfies.github.io/" target="_blank">Nerfies'</a>.
+			<br />
+			Feel free to reuse it &mdash; please link to their respective page and remove the analytics.
+		</p>
+	</div>
+
+</body>
+
+</html>
