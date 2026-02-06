@@ -365,13 +365,15 @@ body>.container>.row {
 		border-radius: 1em;
 		padding: 0.3em 0;
 	}
-
-	p {
-		text-align: justify;
-	}
 }
 
-.bibtex {
+
+#results p,
+#bibtex p {
+	text-align: justify;
+}
+
+#bibtex pre {
 	background-color: var(--bg-color-faint);
 	color: var(--text-color);
 	text-align: left;

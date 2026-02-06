@@ -237,6 +237,6 @@ function copyToClipboard(elementSelector) {
 
 document.addEventListener("DOMContentLoaded", () => {
     [...document.getElementsByClassName("bal-container")].forEach(initBeforeAfterSlider);
-    document.getElementById("copy-bibtex").addEventListener("click", () => copyToClipboard(".bibtex"));
+    document.getElementById("copy-bibtex").addEventListener("click", () => copyToClipboard("#bibtex code"));
     makeZoomable(".zoomable", 2);
 });
