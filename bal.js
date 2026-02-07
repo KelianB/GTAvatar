@@ -49,13 +49,18 @@ function initBeforeAfterSlider(container) {
             const newWidth = x * 100 / containerRect.width;
             before.setAttribute("style", "width:" + newWidth + "%;");
             handle.setAttribute("style", "left:" + newWidth + "%;");
+            return true;
         }
-
+        return false;
     };
 
     // Touch screen event listener
     container.addEventListener("touchmove", (e) => {
-        onMove(e.changedTouches[0].clientX);
+        const b = onMove(e.changedTouches[0].clientX, e);
+        if (b) {
+            // Prevent horizontal scrolling of the page from interfering with the slider
+            e.preventDefault();
+        }
     });
 
     // Mouse move event listener

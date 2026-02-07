@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const TEXTUREEDIT_EXAMPLES = [
-        ["elijah_star", "Tattoo"], ["marcel_sharp", "Checkerboard & text"], ["veronica_makeup", "Make-up"], ["obama_teaser", ""], ["katie_hair", "Hair color"], ["bala_swap", "Texture swap"], ["wojtek_swap", "Texture swap"]
+        ["elijah_star", "Tattoo"], ["marcel_sharp", "Checkerboard & text"], ["veronica_makeup", "Make-up"], ["obama_teaser", ""], ["katie_hair", "Hair color"], ["wojtek_swap", "Texture swap"]
     ];
     populateCarousel("#carousel-textureedit", TEXTUREEDIT_EXAMPLES.length, (index) => {
         const x = TEXTUREEDIT_EXAMPLES[index];
