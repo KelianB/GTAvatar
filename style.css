@@ -39,6 +39,10 @@ body {
 	.large-only {
 		display: none !important;
 	}
+
+	.update {
+		flex-direction: column;
+	}
 }
 
 h1,
@@ -212,7 +216,7 @@ body>.container>.row {
 	align-items: center;
 	justify-items: center;
 	gap: 0.5em;
-	margin: 0.25em 0;
+	margin-top: 1em;
 }
 
 .svg {
