@@ -150,7 +150,7 @@ table {
 }
 
 body>.container>.row {
-	margin-top: 2rem;
+	margin-top: 1rem;
 }
 
 .paper-title {
@@ -216,7 +216,7 @@ body>.container>.row {
 	align-items: center;
 	justify-items: center;
 	gap: 0.5em;
-	margin-top: 1em;
+	margin: 0.5em 0;
 }
 
 .svg {
