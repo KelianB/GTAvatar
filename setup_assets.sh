@@ -38,7 +38,7 @@ echo -e "\n############################## Pretrained SMIRK model (tracking) ####
 gdown 1T65uEd9dVLHgVw5KiUYL66NUee-MCzoE -O ./assets/SMIRK_em1.pt
 
 echo -e "\n############################## MediaPipe face landmarker ##############################"
-wget https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task --directory-prefix assets/
+wget https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task --directory-prefix assets
 
 echo -e "\nDone: cleaning-up" &&
 rm -rf $TMP

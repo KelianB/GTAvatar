@@ -40,19 +40,28 @@ The code for our custom textured Gaussian renderer, used in this project, is ava
 
 1. Clone this repository:
 ```bash
-git clone --recursive git@github.com:KelianB/GTAvatar.git
+git clone --recursive https://github.com/KelianB/GTAvatar.git
 
 # or, if you already cloned non-recursively:
 git submodule update --init
 ```
 
-2. Create the environment using [setup_env.sh](./setup_env.sh).
-3. Download the FLAME geometry and texture space and move both zips to this directory. You will have to register and agree to the license terms of Max Planck Institute.
-    - [FLAME2020.zip](https://download.is.tue.mpg.de/download.php?domain=flame&resume=1&sfile=FLAME2020.zip)
-    - [TextureSpace.zip](https://download.is.tue.mpg.de/download.php?domain=flame&resume=1&sfile=TextureSpace.zip)
-4. Extract and move FLAME files and SMIRK weights using [setup_assets.sh](./setup_assets.sh).
+2. Create the environment:
+```bash
+cd GTAvatar
+./setup_env.sh
+```
 
-These instructions have been tested on Ubuntu 24.04.
+3. Download FLAME geometry and texture space and move both zips to this directory. [[FLAME2020.zip](https://download.is.tue.mpg.de/download.php?domain=flame&resume=1&sfile=FLAME2020.zip)]  [[TextureSpace.zip](https://download.is.tue.mpg.de/download.php?domain=flame&resume=1&sfile=TextureSpace.zip)]  
+You will have to register and agree to the license terms of Max Planck Institute.  
+If those download links fail, navigate manually to https://flame.is.tue.mpg.de/download.php
+
+4. Run script to extract and move FLAME files and pretrained model weights.
+```bash
+./setup_assets.sh
+```
+
+These instructions have been tested on Ubuntu 24.04 and Fedora 41.
 
 <details>
     <summary>Optional steps</summary>
@@ -79,10 +88,15 @@ We support two dataset formats:
 
 ## :fire: Demo
 
-A few trained avatars are provided [here](https://drive.google.com/drive/folders/1fwQ9SlKfbvMzZFYwAQhGE02_D88GThCA?usp=sharing) for quick testing. This command starts an interactive window that lets you interact with the avatar, apply custom textures and relight with environment maps:
-
+A few trained avatars are provided [here](https://drive.google.com/drive/folders/1fwQ9SlKfbvMzZFYwAQhGE02_D88GThCA?usp=sharing) for quick testing. Download manually or use:
+```bash
+gdown 1Bcoybro0LHzoD4CtutmGOfVHDQsavu_y -O default_bala_epoch_15.pt
 ```
-python interact.py --detached /path/to/checkpoint.pt
+
+The following command starts an interactive window that lets you interact with the avatar, apply custom textures and relight with environment maps:
+
+```bash
+python interact.py --detached default_bala_epoch_15.pt
 ```
 
 <p float="center" style="text-align: center;">
