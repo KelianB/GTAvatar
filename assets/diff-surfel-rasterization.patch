@@ -1,0 +1,78 @@
+diff --git a/cuda_rasterizer/auxiliary.h b/cuda_rasterizer/auxiliary.h
+index 9dff1c9..5a1370d 100644
+--- a/cuda_rasterizer/auxiliary.h
++++ b/cuda_rasterizer/auxiliary.h
+@@ -28,13 +28,14 @@
+ // #define MEDIAN_WEIGHT_OFFSET 7
+ 
+ // distortion helper macros
+-#define BACKFACE_CULL 1
++#define BACKFACE_CULL 0
+ #define DUAL_VISIABLE 1
+ // #define NEAR_PLANE 0.2
+ // #define FAR_PLANE 100.0
+ #define DETACH_WEIGHT 0
+ 
+-__device__ const float near_n = 0.2;
++// __device__ const float near_n = 0.2;
++__device__ const float near_n = 0.01;
+ __device__ const float far_n = 100.0;
+ __device__ const float FilterSize = 0.707106; // sqrt(2) / 2
+ __device__ const float FilterInvSquare = 2.0f;
+diff --git a/cuda_rasterizer/backward.cu b/cuda_rasterizer/backward.cu
+index 0a78cc2..e905d21 100644
+--- a/cuda_rasterizer/backward.cu
++++ b/cuda_rasterizer/backward.cu
+@@ -553,9 +553,17 @@ __device__ void compute_transmat_aabb(
+ 	// Update gradients w.r.t. scaling, rotation, position of the Gaussian
+ 	glm::mat3x4 dL_dM = P * glm::transpose(dL_dT);
+ 	float3 dL_dtn = transformVec4x3Transpose(dL_dnormals[idx], viewmatrix);
+-#if DUAL_VISIABLE
++
+ 	float3 p_view = transformPoint4x3(p_orig, viewmatrix);
+ 	float cos = -sumf3(p_view * normal);
++
++#if BACKFACE_CULL
++	if (cos < 0) {
++		return;	
++	}
++#endif
++
++#if DUAL_VISIABLE
+ 	float multiplier = cos > 0 ? 1: -1;
+ 	dL_dtn = multiplier * dL_dtn;
+ #endif
+diff --git a/cuda_rasterizer/config.h b/cuda_rasterizer/config.h
+index 2a912fb..73131b0 100644
+--- a/cuda_rasterizer/config.h
++++ b/cuda_rasterizer/config.h
+@@ -12,7 +12,7 @@
+ #ifndef CUDA_RASTERIZER_CONFIG_H_INCLUDED
+ #define CUDA_RASTERIZER_CONFIG_H_INCLUDED
+ 
+-#define NUM_CHANNELS 3 // Default 3, RGB
++#define NUM_CHANNELS 5 // Default 3, RGB
+ #define BLOCK_X 16
+ #define BLOCK_Y 16
+ 
+diff --git a/cuda_rasterizer/forward.cu b/cuda_rasterizer/forward.cu
+index 6ba9e33..726936f 100644
+--- a/cuda_rasterizer/forward.cu
++++ b/cuda_rasterizer/forward.cu
+@@ -206,8 +206,15 @@ __global__ void preprocessCUDA(int P, int D, int M,
+ 		normal = make_float3(0.0, 0.0, 1.0);
+ 	}
+ 
+-#if DUAL_VISIABLE
+ 	float cos = -sumf3(p_view * normal);
++
++#if BACKFACE_CULL
++	if (cos < 0) {
++		return;	
++	}
++#endif
++
++#if DUAL_VISIABLE
+ 	if (cos == 0) return;
+ 	float multiplier = cos > 0 ? 1: -1;
+ 	normal = multiplier * normal;

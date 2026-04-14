@@ -1,0 +1,6 @@
+############################## DATASET ##############################
+
+train_dirs: ["/bulk/data/hdtf_hravatar/schako"]
+dataset_type: HRAvatar
+test_set_num: 500
+source_fps: 24

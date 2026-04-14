@@ -1,0 +1,78 @@
+############################## META ##############################
+
+output_dir: outputs/GTAvatar
+
+############################## MODEL ##############################
+
+# Geometry
+gaussians_init_count: 4
+gaussians_init_opacity: 0.99
+gaussians_init_scale: 2
+
+# Rendering
+shader_type: texture_pbr
+texture_res_albedo: 1024
+texture_res_r_spec: 512
+texture_res_normal: 1024
+env_resolution: 32
+env_mip_levels: 2
+env_activation: exp
+initial_envmap_intensity: 0.5
+initial_roughness: 0.9
+initial_specular: 0.05
+
+############################## TRAINING ##############################
+
+save_epoch_frequency: 5
+visualize_frequency: 1000
+
+# Losses
+loss_photo_l1_weight: 0.8
+loss_photo_dssim_weight: 0.2
+loss_mask_weight: 0.4
+loss_surface_weight: 0.05
+loss_jaw_pose_reg_weight: 0.1
+loss_expr_reg_weight: 0.01
+loss_flame_reg_weight: 0.001
+loss_laplacian_mesh_relative_weight: 200
+loss_roughness_texture_tv_weight: 0.01
+loss_bary_reg_l2_weight: 0.1
+loss_uv_distortion_weight: 50
+loss_uv_distortion_start: 2000
+loss_uv_distortion_threshold: 0.1
+loss_texture_gaps_reg_weight: 1.0
+loss_normal_map_cosine_weight: 0.01
+loss_albedo_supervise_weight: 0.25
+loss_normals_supervise_weight: 0.25
+loss_normals_supervise_halflife: 10000
+# Parametric albedo regularization
+shader_parametric_albedo: FLAME
+learn_shader_parametric_albedo_lr: 0.05
+loss_albedo_L1_reg_weight: 1e-4
+
+# Learning rates
+learn_tracking: smirk
+learn_expr_lr: 5e-5
+learn_flame_shape_dirs_lr: 0
+learn_flame_v_template_lr: 1e-5
+learn_flame_expression_dirs_lr: 1e-6
+learn_flame_pose_dirs_lr: 1e-6
+learn_flame_lbs_weights_lr: 1e-4
+learn_disp_lr: 1e-3
+learn_bary_lr: 0.001
+learn_opacity_lr: 0.05
+learn_scaling_lr: 0.005
+learn_rotation_lr: 0.001
+learn_shader_material_lr: 5e-3
+learn_shader_light_lr: 2e-2
+learn_texture_normals_lr: 1e-3
+# Lower all learning rates during the last epoch
+last_epoch_lr_factor: 0.1
+
+# Enable densification and reduce regularizations
+loss_surface_weight: 0.01
+loss_expr_reg_weight: 0
+loss_bary_reg_l2_weight: 0
+loss_uv_distortion_weight: 0
+densify_from_iter: 10000
+densify_until_iter: 30000

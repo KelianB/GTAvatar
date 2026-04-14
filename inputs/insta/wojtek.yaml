@@ -1,0 +1,6 @@
+############################## DATASET ##############################
+
+train_dirs: ["/bulk/data/insta_hravatar/wojtek"]
+dataset_type: HRAvatar
+test_set_num: 350
+source_fps: 25
