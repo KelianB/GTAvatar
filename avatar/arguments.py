@@ -118,9 +118,9 @@ def create_parser() -> ArgumentParser:
 
 detached_ckpt = None
 
-def parse_args(parser: ArgumentParser) -> Namespace:
+def parse_args(parser: ArgumentParser, cmd_args=None) -> Namespace:
     # Pre-parse args
-    args, unknown_args = parser.parse_known_args()
+    args, unknown_args = parser.parse_known_args(cmd_args)
     
     # If --detached is present, load the checkpoint and use its saved args as new defaults. Otherwise, parse normally.
     if args.detached:
@@ -138,7 +138,7 @@ def parse_args(parser: ArgumentParser) -> Namespace:
             parser.add_argument("-i", "--input", is_config_file=True, help="Config file path (overrides fields in the main config)")
 
     # Parse again
-    args = parser.parse_args()
+    args = parser.parse_args(cmd_args)
 
     # In detached mode: overwrite values we don't want to reuse from training
     if args.detached:

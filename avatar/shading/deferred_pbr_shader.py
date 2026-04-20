@@ -140,6 +140,7 @@ class DeferredPBRShader(nn.Module):
   
     def restore(self, state):
         self.load_state_dict(state)
+        self.update_env_lights()
 
 
 def physical_render(

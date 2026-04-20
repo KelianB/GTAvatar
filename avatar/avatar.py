@@ -142,6 +142,7 @@ class Avatar:
         deformer, shader, gaussians, flame = self.deformer, self.shader, self.gaussians, self.flame
         is_textured_shader = isinstance(shader, TexturedDeferredPBRShader)
         B, H, W = views["img"].shape[0:3]
+        H, W = views["camera"][0].image_height, views["camera"][0].image_width
 
         if env_rot is not None:
             assert env_rot.shape == (B,4,4), f"invalid env_rot shape: {env_rot.shape}, should be ({B},4,4)"
@@ -332,7 +333,7 @@ class Avatar:
             if args.shader_type in ["primitive_pbr", "texture_pbr"]:
                 attr_dim = 8 if args.shader_parametric_albedo else 5
                 attr = torch.ones((B, H, W, attr_dim), dtype=torch.float, device=device)
-                attr[..., 3] = 0.5
+                attr[..., 3] = 0.5 # roughness
                 sphere_rast_buffers["attr"] = attr
                 vis["shading_sphere"] = shader(views["camera"], views["seq_idx"], sphere_rast_buffers,
                                                env_light=env_light, env_rot=env_rot, render_settings=render_settings)

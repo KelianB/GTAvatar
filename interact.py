@@ -202,6 +202,8 @@ def main(args, avatar):
             self.preset_mask = None
             self.envmap = None
             self.free_cam = True
+            self.background_color = "white"
+            self.gaussians_mask = None
 
             # Center the orbit camera at the center of the mesh in the first view
             base_verts = avatar.deformer.get_mesh_verts(base_view["flame_pose"], base_view["flame_expression"], avatar.shape_param, avatar.gaussians, avatar.flame_scale)
@@ -358,7 +360,7 @@ def main(args, avatar):
             self.select_mode_box.setCurrentIndex(default_render_mode)
             this = self
             def update_mode():
-                img, _ = this.update_render()
+                img, _, _ = this.update_render()
                 size = img.shape[0:2]
                 this.set_window(size)
             self.select_mode_box.activated.connect(update_mode)
@@ -769,6 +771,9 @@ def main(args, avatar):
                 gaussians_mask = g_mask.view(-1)
             else: 
                 gaussians_mask = None
+            
+            if self.gaussians_mask is not None:
+                gaussians_mask = torch.logical_and(gaussians_mask, self.gaussians_mask) if gaussians_mask is not None else self.gaussians_mask
     
             render_settings = RenderSettings(
                 decimation_ratio = self.control_decimation.value,
@@ -785,7 +790,7 @@ def main(args, avatar):
                 roughness_scale = self.roughness_scale.value,
                 brightness_scale = self.brightness_scale.value,
                 shading_normals = ["splatted", "depth", "mesh", "mesh_flat"][self.shading_normals_mode_box.currentData()],
-                background_color = "black" if self.envmap is not None and use_env_background else "white",
+                background_color = "black" if self.envmap is not None and use_env_background else self.background_color,
                 use_env_background = use_env_background,
             )
     
@@ -815,10 +820,10 @@ def main(args, avatar):
                     # mesh_tri is a (1,H,W,1) image where each pixel contains the triangle index covering it (0 if none)
                     self.mesh_tri = resize(mesh_tri.permute(0,3,1,2), [img.shape[0], img.shape[1]], InterpolationMode.NEAREST).permute(0,2,3,1)
 
-            return img, output
+            return img, output, get_vis
         
         def grab_screenshot(self, no_background=True):
-            img, output = self.update_render(display=False)
+            img, output, _ = self.update_render(display=False)
             if no_background:
                 alpha = output.rast_buffers["rend_alpha"]
                 if self.envmap is not None and self.box_envlight_background.isChecked():
@@ -876,7 +881,7 @@ def main(args, avatar):
 
     w = MainWindow()
 
-    img, _ = w.update_render()
+    img, _, _ = w.update_render()
     w.set_window(img.shape[0:2])
     w.show()
     app.exec_()
@@ -889,22 +894,26 @@ def prepare_video_views(avatar: Avatar, dataset, target_fps: int = None, filteri
     source_fps = avatar.args.source_fps
     target_fps = target_fps or source_fps
 
-    collate_fn = dataset.collate
     start = start or 0
     end = end or len(dataset)
-    dataset = torch.utils.data.Subset(dataset, range(start, min(end, len(dataset))))
+    subset = torch.utils.data.Subset(dataset, range(start, min(end, len(dataset))))
 
     # Preload the dataset
-    all_views = [dataset_util.to_device_recursive(collate_fn([x]), device) for x in tqdm(dataset, desc="Loading all views")]
-    poses, exprs = zip(*[avatar.compute_flame_attrs(v, is_train=(dataset == avatar.dataset_train)) for v in tqdm(all_views, desc="Computing FLAME attributes")])
-    poses, exprs = torch.stack(poses).squeeze(1), torch.stack(exprs).squeeze(1) # shape (n_views, n_params)
+    all_views = [dataset_util.to_device_recursive(dataset.collate([x]), device) for x in tqdm(subset, desc="Loading all views")]
 
+    if avatar.args.detached:
+        poses, exprs = [v["flame_pose"] for v in all_views], [v["flame_expression"] for v in all_views]
+    else:
+        poses, exprs = zip(*[avatar.compute_flame_attrs(v, is_train=(dataset == avatar.dataset_train)) for v in tqdm(all_views, desc="Computing FLAME attributes")])
+    
+    poses, exprs = torch.cat(poses), torch.cat(exprs) # shape (n_views, n_params)
+        
     if source_fps != target_fps:
         # Subsample poses and expressions to match the target FPS
         frame_interval = source_fps / target_fps
-        i_before = torch.arange(0, len(dataset), frame_interval).floor().long()
-        i_after = (i_before + 1).clamp(max=len(dataset)-1)
-        alpha = torch.arange(0, len(dataset), frame_interval).unsqueeze(1).to(device) % 1
+        i_before = torch.arange(0, len(subset), frame_interval).floor().long()
+        i_after = (i_before + 1).clamp(max=len(subset)-1)
+        alpha = torch.arange(0, len(subset), frame_interval).unsqueeze(1).to(device) % 1
         poses = poses[i_before] * (1 - alpha) + poses[i_after] * alpha
         exprs = exprs[i_before] * (1 - alpha) + exprs[i_after] * alpha
         all_views = [all_views[i] for i in i_before]
@@ -1168,26 +1177,32 @@ class ClickableImage(QLabel):
         self.wheelScrolled.emit(delta, is_shift_pressed, is_ctrl_pressed)
 
 class OrbitCamera:
-    def __init__(self, orbit_center, distance=1, min_distance=1e-5, device="cpu", dtype=torch.float32):
+    def __init__(self, center, distance=1, min_distance=1e-5, yaw=0, pitch=0, device=None, dtype=torch.float32):
         """
         Initialize the orbit controller.
         
         Args:
-            orbit_center (list/tuple/torch.Tensor): The point to orbit around (3D).
+            center (list/tuple/torch.Tensor): The point to orbit around (3D).
             device (str): "cpu" or "cuda".
             dtype (torch.dtype): torch data type.
         """
+        if device is None:
+            device = center.device if torch.is_tensor(center) else "cpu"
         self.device = device
         self.dtype = dtype
-        self.center = orbit_center.clone().to(device) if torch.is_tensor(orbit_center) else torch.tensor(orbit_center, device=device, dtype=dtype)
+        self.center = center.clone().to(device) if torch.is_tensor(center) else torch.tensor(center, device=device, dtype=dtype)
         self.min_distance = min_distance
-        self.yaw = 0
-        self.pitch = 0
+        self.yaw = yaw
+        self.pitch = pitch
         self.distance = distance
         self._world_to_cam, self._cam_to_world = None, None
 
     def move_center(self, dx, dy, dz=0):
         self.center += (self.cam_to_world[:3,:3] @ torch.tensor([-dx, -dy, dz], dtype=torch.float, device=self.device))
+        self._invalidate_transform()
+
+    def set_center(self, xyz: Tensor):
+        self.center = xyz.to(self.device).to(self.dtype)
         self._invalidate_transform()
 
     def set_yaw(self, yaw):
@@ -1274,6 +1289,10 @@ class OrbitCamera:
         world_to_cam[:3, 3] = trans
 
         return world_to_cam, cam_to_world
+
+    def clone(self):
+        return OrbitCamera(self.center, self.distance, self.min_distance, self.yaw, self.pitch, self.device, self.dtype)
+
 
 if __name__ == "__main__":
     parser = create_parser()
