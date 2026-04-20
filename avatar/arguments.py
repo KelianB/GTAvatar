@@ -67,6 +67,7 @@ def create_parser() -> ArgumentParser:
     arg("--save_epoch_frequency", type=int, default=0, help="Frequency of checkpoints saving (epochs).")
     arg("--visualize_frequency", type=int, default=100, help="Frequency of visualizations (iterations)")
     arg("--train_subdir", type=str, default=None, help="Use a subdirectory for training outputs (for quick experiments within the same config)")
+    arg("--cache", action=BooleanOptionalAction, default=False, help="Cache the dataset in RAM for faster training (uses 20-30 GB of memory, depending on the dataset)")
 
     # Objective functions
     from avatar.losses import losses

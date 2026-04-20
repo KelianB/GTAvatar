@@ -10,7 +10,7 @@ from torch.optim import Adam
 from avatar import Avatar, create_parser, parse_args
 from avatar.losses import losses
 from avatar.densification import do_clone, do_split, do_prune
-from dataset import DeviceDataLoader, to_device_recursive
+from dataset import DeviceDataLoader, DatasetCache, to_device_recursive
 from utils.logging import setup_logging
 from utils.visualization import save_img_columns
 from utils.tqdm import tqdm
@@ -36,19 +36,26 @@ def train(avatar: Avatar, out_dir: Path):
 
     ###################### Data ######################
 
-    if args.train_views_whitelist:
-        # Train on specific views for debugging
-        dataset_train_subset = torch.utils.data.Subset(dataset_train, args.train_views_whitelist)
-    else:
-        dataset_train_subset = None
-    dataloader_train = DeviceDataLoader(dataset_train_subset or dataset_train, device=device, batch_size=args.batch_size,
-                                        collate_fn=dataset_train.collate, shuffle=True, drop_last=False, num_workers=4)
-
     # Pick some views for visualizations during training
     n_debug_img = min(5, len(dataset_train))
     view_indices = args.visualization_views or range(0, len(dataset_train), len(dataset_train) // n_debug_img)
     debug_views = [dataset_train[idx] for idx in view_indices]
     debug_views = to_device_recursive(dataset_train.collate(debug_views), device)
+
+    num_workers = 4
+    
+    if args.train_views_whitelist:
+        # Train on specific views for debugging
+        dataset_train = torch.utils.data.Subset(dataset_train, args.train_views_whitelist)
+    
+    if args.cache:
+        dataset_train = DatasetCache(dataset_train)
+        # With caching, each worker would hold its own copy of the dataset in memory
+        num_workers = 0
+    
+    dataloader_train = DeviceDataLoader(dataset_train, device=device, batch_size=args.batch_size,
+                                        collate_fn=dataset_train.collate, shuffle=True, drop_last=False, num_workers=num_workers)
+
   
     ##################### Losses #####################
 
