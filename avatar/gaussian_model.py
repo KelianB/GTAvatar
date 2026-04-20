@@ -32,11 +32,6 @@ class GaussianModel:
         self.rotation_activation = torch.nn.functional.normalize
 
     def __init__(self, args, flame):
-        sh_degree = 0
-        self.active_sh_degree = 0
-        self.max_sh_degree = sh_degree
-        self._features_dc = torch.empty(0)
-        self._features_rest = torch.empty(0)
         self._scaling_base = torch.empty(0)
         self._rotation_base = torch.empty(0)
         self._opacity = torch.empty(0)
@@ -52,9 +47,6 @@ class GaussianModel:
     
     def capture(self):
         return {
-            "active_sh_degree": self.active_sh_degree,
-            "features_dc": self._features_dc,
-            "features_rest": self._features_rest,
             "scaling_base": self._scaling_base,
             "rotation_base": self._rotation_base,
             "opacity": self._opacity,
@@ -70,15 +62,11 @@ class GaussianModel:
             "pose_dirs": getattr(self, "pose_dirs", None),
             "lbs_weights": getattr(self, "lbs_weights", None),
             "disp": getattr(self, "_disp", None),
-            "J_uv_st": getattr(self, "J_uv_st", None),
             "triangle_idx": getattr(self, "triangle_idx", None),
             "bary_coords": getattr(self, "bary_coords", None)
         }
     
     def restore(self, state):
-        self.active_sh_degree = state["active_sh_degree"]
-        self._features_dc = state["features_dc"]
-        self._features_rest = state["features_rest"]
         self._scaling_base = state["scaling_base"]
         self._rotation_base = state["rotation_base"]
         self._opacity = state["opacity"]
@@ -94,7 +82,6 @@ class GaussianModel:
         if "pose_dirs" in state: self.pose_dirs = state["pose_dirs"]
         if "lbs_weights" in state: self.lbs_weights = state["lbs_weights"]
         if "disp" in state: self._disp = state["disp"]
-        if "J_uv_st" in state: self.J_uv_st = state["J_uv_st"]
         if "triangle_idx" in state: self.triangle_idx = state["triangle_idx"]
         if "bary_coords" in state: self.bary_coords = state["bary_coords"]
         logging.info(f"GaussianModel restored with {self._opacity.shape[0]} gaussians.")
@@ -104,23 +91,12 @@ class GaussianModel:
         return self._opacity.shape[0]
 
     @property
-    def get_features(self):
-        features_dc = self._features_dc
-        features_rest = self._features_rest
-        return torch.cat((features_dc, features_rest), dim=1)
-    
-    @property
     def get_opacity(self):
         return self.opacity_activation(self._opacity)
-
-    def oneupSHdegree(self):
-        if self.active_sh_degree < self.max_sh_degree:
-            self.active_sh_degree += 1
 
     '''
     def create_from_verts(self, points, opacity_coeff=0.1, scale_coeff=1, autoscale=True, scales=None):
         device = points.device
-        features = torch.zeros((points.shape[0], 3, (self.max_sh_degree + 1) ** 2), dtype=torch.float, device=device)
 
         if scales is None:
             if autoscale:
@@ -139,8 +115,6 @@ class GaussianModel:
         opacities = self.inverse_opacity_activation(opacity_coeff * torch.ones((points.shape[0], 1), dtype=torch.float, device=device))
 
         self._xyz = nn.Parameter(points.requires_grad_(False))
-        self._features_dc = nn.Parameter(features[:,:,0:1].transpose(1, 2).contiguous().requires_grad_(True))
-        self._features_rest = nn.Parameter(features[:,:,1:].transpose(1, 2).contiguous().requires_grad_(True))
         self._scaling_base = nn.Parameter(scales.requires_grad_(True))
         self._rotation_base = nn.Parameter(rots.requires_grad_(True))
         self._opacity = nn.Parameter(opacities.requires_grad_(True))
@@ -256,10 +230,10 @@ class GaussianModel:
     def construct_list_of_attributes(self):
         l = ['x', 'y', 'z', 'nx', 'ny', 'nz']
         # All channels except the 3 DC
-        for i in range(self._features_dc.shape[1]*self._features_dc.shape[2]):
-            l.append('f_dc_{}'.format(i))
-        for i in range(self._features_rest.shape[1]*self._features_rest.shape[2]):
-            l.append('f_rest_{}'.format(i))
+        # for i in range(self._features_dc.shape[1]*self._features_dc.shape[2]):
+        #     l.append('f_dc_{}'.format(i))
+        # for i in range(self._features_rest.shape[1]*self._features_rest.shape[2]):
+        #     l.append('f_rest_{}'.format(i))
         l.append('opacity')
         for i in range(self._scaling_base.shape[1]):
             l.append('scale_{}'.format(i))
